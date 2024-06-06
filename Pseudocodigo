@@ -1,0 +1,45 @@
+Clase SistemaClinico
+    Métodos:
+        cargarDoctores()
+        cargarPacientes()
+        cargarCitas()
+        guardarDoctores()
+        guardarPacientes()
+        guardarCitas()
+        registrarDoctor(id, nombre, especialidad)
+        eliminarDoctor(id)
+        listarDoctores()
+        mostrarListaDoctores()
+        registrarPaciente(id, nombre)
+        eliminarPaciente(id)
+        listarPacientes()
+        mostrarListaPacientes()
+        registrarCita(id, fechaHora, motivo, idDoctor, idPaciente)
+        eliminarCita(id)
+        listarCitas()
+        mostrarListaCitas()
+
+Clase Doctor
+    Atributos:
+        id
+        nombre
+        especialidad
+
+Clase Paciente
+    Atributos:
+        id
+        nombre
+
+Clase Cita
+    Atributos:
+        id
+        fechaHora
+        motivo
+        idDoctor
+        idPaciente
+
+Función principal
+    Crear una instancia de SistemaClinico
+    Cargar doctores, pacientes y citas
+    Mostrar menú al usuario
+    Según la opción elegida por el usuario, ejecutar la operación correspondiente
