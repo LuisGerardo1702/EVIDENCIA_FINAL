@@ -1,0 +1,362 @@
+import java.io.*;                                                                                             
+import java.util.*;                                                                                           
+import java.awt.Desktop;                                                                                      
+                                                                                                              
+public class SistemaClinico{                                                                                  
+    public Map<String, Doctor> doctores;                                                                       
+    public Map<String, Paciente> pacientes;                                                                    
+    public Map<String, Cita> citas;                                                                            
+    private final String archivoDoctores;                                                                      
+    private final String archivoPacientes;                                                                     
+    private final String archivoCitas;                                                                         
+                                                                                                              
+    public SistemaClinico(String archivoDoctores, String archivoPacientes, String archivoCitas) {              
+        this.doctores = new HashMap<>();                                                                      
+        this.pacientes = new HashMap<>();                                                                     
+        this.citas = new HashMap<>();                                                                         
+        this.archivoDoctores = archivoDoctores;                                                               
+        this.archivoPacientes = archivoPacientes;                                                             
+        this.archivoCitas = archivoCitas;                                                                     
+    }                                                                                                         
+                                                                                                              
+    public static class Doctor {                                                                               
+        String id;                                                                                             
+        String nombre;                                                                                         
+        String especialidad;                                                                                   
+                                                                                                              
+        public Doctor(String id, String nombre, String especialidad) {                                         
+            this.id = id;                                                                                     
+            this.nombre = nombre;                                                                             
+            this.especialidad = especialidad;                                                                 
+        }                                                                                                     
+    }                                                                                                         
+                                                                                                              
+    public static class Paciente {                                                                             
+        String id;                                                                                             
+        String nombre;                                                                                         
+                                                                                                              
+        public Paciente(String id, String nombre) {                                                            
+            this.id = id;                                                                                     
+            this.nombre = nombre;                                                                             
+        }                                                                                                     
+    }                                                                                                         
+                                                                                                              
+    public static class Cita {                                                                                 
+        String id;                                                                                             
+        String fechaHora;                                                                                      
+        String motivo;                                                                                         
+        String idDoctor;                                                                                       
+        String idPaciente;                                                                                     
+                                                                                                              
+        public Cita(String id, String fechaHora, String motivo, String idDoctor, String idPaciente) {          
+            this.id = id;                                                                                     
+            this.fechaHora = fechaHora;                                                                       
+            this.motivo = motivo;                                                                             
+            this.idDoctor = idDoctor;                                                                         
+            this.idPaciente = idPaciente;                                                                     
+        }                                                                                                     
+    }                                                                                                         
+    public void cargarDoctores() {                                                                             
+        try (BufferedReader br = new BufferedReader(new FileReader(archivoDoctores))) {                       
+            String linea;                                                                                     
+            while ((linea = br.readLine()) != null) {                                                         
+                String[] partes = linea.split(",");                                                           
+                if (partes.length >= 3) {                                                                     
+                    doctores.put(partes[0], new Doctor(partes[0], partes[1], partes[2]));                     
+                } else {                                                                                      
+                    System.out.println("Línea mal formada en el archivo: " + linea);                          
+                }                                                                                             
+            }                                                                                                 
+            System.out.println("Doctores cargados correctamente.");                                           
+        } catch (IOException e) {                                                                             
+            System.out.println("Error al cargar los doctores: " + e.getMessage());                            
+        }                                                                                                     
+    }                                                                                                         
+                                                                                                              
+    public void cargarPacientes() {                                                                            
+        try (BufferedReader br = new BufferedReader(new FileReader(archivoPacientes))) {                      
+            String linea;                                                                                     
+            while ((linea = br.readLine()) != null) {                                                         
+                String[] partes = linea.split(",");                                                           
+                if (partes.length >= 2) {                                                                     
+                    pacientes.put(partes[0], new Paciente(partes[0], partes[1]));                             
+                } else {                                                                                      
+                    System.out.println("Línea mal formada en el archivo: " + linea);                          
+                }                                                                                             
+            }                                                                                                 
+            System.out.println("Pacientes cargados correctamente.");                                          
+        } catch (IOException e) {                                                                             
+            System.out.println("Error al cargar los pacientes: " + e.getMessage());                           
+        }                                                                                                     
+    }                                                                                                         
+                                                                                                              
+    public void cargarCitas() {                                                                                
+        try (BufferedReader br = new BufferedReader(new FileReader(archivoCitas))) {                          
+            String linea;                                                                                     
+            while ((linea = br.readLine()) != null) {                                                         
+                String[] partes = linea.split(",");                                                           
+                if (partes.length >= 5) {                                                                     
+                    citas.put(partes[0], new Cita(partes[0], partes[1], partes[2], partes[3], partes[4]));    
+                } else {                                                                                      
+                    System.out.println("Línea mal formada en el archivo: " + linea);                          
+                }                                                                                             
+            }                                                                                                 
+            System.out.println("Citas cargadas correctamente.");                                              
+        } catch (IOException e) {                                                                             
+            System.out.println("Error al cargar las citas: " + e.getMessage());                               
+        }                                                                                                     
+    }                                                                                                         
+                                                                                                              
+    public void guardarDoctores() {                                                                            
+        try (PrintWriter escritor = new PrintWriter(archivoDoctores)) {                                       
+            for (Doctor doctor : doctores.values()) {                                                         
+                escritor.println(doctor.id + "," + doctor.nombre + "," + doctor.especialidad);                
+            }                                                                                                 
+            System.out.println("Cambios guardados correctamente en la lista de doctores.");                   
+        } catch (FileNotFoundException e) {                                                                   
+            System.out.println("Error al guardar los cambios: " + e.getMessage());                            
+        }                                                                                                     
+    }                                                                                                         
+    public void guardarPacientes() {                                                                           
+        try (PrintWriter escritor = new PrintWriter(archivoPacientes)) {                                      
+            for (Paciente paciente : pacientes.values()) {                                                    
+                escritor.println(paciente.id + "," + paciente.nombre);                                        
+            }                                                                                                 
+            System.out.println("Cambios guardados correctamente en la lista de pacientes.");                  
+        } catch (FileNotFoundException e) {                                                                   
+            System.out.println("Error al guardar los cambios: " + e.getMessage());                            
+        }                                                                                                     
+    }                                                                                                         
+                                                                                                              
+    public void guardarCitas() {                                                                               
+        try (PrintWriter escritor = new PrintWriter(archivoCitas)) {                                          
+            for (Cita cita : citas.values()) {                                                                
+                escritor.println(cita.id + "," + cita.fechaHora + "," + cita.motivo + "," + cita.idDoctor + ",
+            }                                                                                                 
+            System.out.println("Cambios guardados correctamente en la lista de citas.");                      
+        } catch (FileNotFoundException e) {                                                                   
+            System.out.println("Error al guardar los cambios: " + e.getMessage());                            
+        }                                                                                                     
+    }                                                                                                         
+                                                                                                              
+    public void registrarDoctor(String id, String nombre, String especialidad) {                               
+        doctores.put(id, new Doctor(id, nombre, especialidad));                                               
+        System.out.println("Doctor registrado correctamente.");                                               
+    }                                                                                                         
+                                                                                                              
+    public void eliminarDoctor(String id) {                                                                    
+        if (doctores.containsKey(id)) {                                                                       
+            doctores.remove(id);                                                                              
+            System.out.println("Doctor eliminado correctamente.");                                            
+        } else {                                                                                              
+            System.out.println("El doctor no existe.");                                                       
+        }                                                                                                     
+    }                                                                                                         
+                                                                                                              
+    public void listarDoctores() {                                                                             
+        System.out.println("Doctores:");                                                                      
+        for (Doctor doctor : doctores.values()) {                                                             
+            System.out.println(doctor.id + " : " + doctor.nombre + " : " + doctor.especialidad);              
+        }                                                                                                     
+    }                                                                                                         
+                                                                                                              
+    public void mostrarListaDoctores() {                                                                       
+        try {                                                                                                 
+            Desktop.getDesktop().open(new File(archivoDoctores));                                             
+        } catch (IOException e) {                                                                             
+            System.out.println("Error al abrir el archivo de doctores: " + e.getMessage());                   
+        }                                                                                                     
+    }                                                                                                         
+                                                                                                              
+    public void registrarPaciente(String id, String nombre) {                                                  
+        pacientes.put(id, new Paciente(id, nombre));                                                          
+        System.out.println("Paciente registrado correctamente.");                                             
+    }                                                                                                         
+                                                                                                              
+    public void eliminarPaciente(String id) {                                                                  
+        if (pacientes.containsKey(id)) {                                                                      
+            pacientes.remove(id);                                                                             
+            System.out.println("Paciente eliminado correctamente.");                                          
+        } else {                                                                                              
+            System.out.println("El paciente no existe.");                                                     
+        }                                                                                                     
+    }                                                                                                         
+                                                                                                              
+    public void listarPacientes() {                                                                            
+        System.out.println("Pacientes:");                                                                     
+        for (Paciente paciente : pacientes.values()) {                                                        
+            System.out.println(paciente.id + " : " + paciente.nombre);                                        
+        }                                                                                                     
+    }                                                                                                         
+                                                                                                              
+    public void mostrarListaPacientes() {                                                                      
+        try {                                                                                                 
+            Desktop.getDesktop().open(new File(archivoPacientes));                                            
+        } catch (IOException e) {                                                                             
+            System.out.println("Error al abrir el archivo de pacientes: " + e.getMessage());                  
+        }                                                                                                     
+    }                                                                                                         
+    public void registrarCita(String id, String fechaHora, String motivo, String idDoctor, String idPaciente) 
+        citas.put(id, new Cita(id, fechaHora, motivo, idDoctor, idPaciente));                                 
+        System.out.println("Cita registrada correctamente.");                                                 
+    }                                                                                                         
+                                                                                                              
+    public void eliminarCita(String id) {                                                                      
+        if (citas.containsKey(id)) {                                                                          
+            citas.remove(id);                                                                                 
+            System.out.println("Cita eliminada correctamente.");                                              
+        } else {                                                                                              
+            System.out.println("La cita no existe.");                                                         
+        }                                                                                                     
+    }                                                                                                         
+                                                                                                              
+    public void listarCitas() {                                                                                
+        System.out.println("Citas:");                                                                         
+        for (Cita cita : citas.values()) {                                                                    
+            System.out.println(cita.id + " : " + cita.fechaHora + " : " + cita.motivo + " : " + cita.idDoctor 
+        }                                                                                                     
+    }                                                                                                         
+                                                                                                              
+    public void mostrarListaCitas() {                                                                          
+        try {                                                                                                 
+            Desktop.getDesktop().open(new File(archivoCitas));                                                
+        } catch (IOException e) {                                                                             
+            System.out.println("Error al abrir el archivo de citas: " + e.getMessage());                      
+        }                                                                                                     
+    }                                                                                                         
+                                                                                                              
+    public static void main(String[] args) {                                                                  
+        String archivoDoctores = "C:\\Users\\luisg\\OneDrive\\Documentos\\TAREAS TECMILENIO\\COMPUTACION EN JA
+        String archivoPacientes = "C:\\Users\\luisg\\OneDrive\\Documentos\\TAREAS TECMILENIO\\COMPUTACION EN J
+        String archivoCitas = "C:\\Users\\luisg\\OneDrive\\Documentos\\TAREAS TECMILENIO\\COMPUTACION EN JAVA\
+        SistemaClinico sistemaClinico = new SistemaClinico(archivoDoctores, archivoPacientes, archivoCitas);  
+        sistemaClinico.cargarDoctores();                                                                      
+        sistemaClinico.cargarPacientes();                                                                     
+        sistemaClinico.cargarCitas();                                                                         
+                                                                                                              
+        Scanner scanner = new Scanner(System.in);                                                             
+                                                                                                              
+        System.out.print("Ingresa tu nombre de usuario: ");                                                   
+        String nombreUsuario = scanner.nextLine();                                                            
+        System.out.print("Ingresa tu contraseña: ");                                                          
+        String contrasena = scanner.nextLine();                                                               
+                                                                                                              
+        while (!contrasena.equals("3107510")) {                                                               
+            System.out.println("Contraseña incorrecta. Inténtalo de nuevo.");                                 
+            System.out.print("Ingresa tu contraseña: ");                                                      
+            contrasena = scanner.nextLine();                                                                  
+        }                                                                                                     
+                                                                                                              
+        System.out.println("Bienvenido " + nombreUsuario + "!");                                              
+                                                                                                              
+        int opcion = 0;                                                                                       
+        do {                                                                                                  
+            System.out.println("\nMenú:");                                                                    
+            System.out.println("1. Registrar doctor");                                                        
+            System.out.println("2. Mostrar doctores");                                                        
+            System.out.println("3. Guardar doctores");                                                        
+            System.out.println("4. Eliminar doctor");                                                         
+            System.out.println("5. Mostrar lista de doctores");                                               
+            System.out.println("6. Registrar paciente");                                                      
+            System.out.println("7. Mostrar pacientes");                                                       
+            System.out.println("8. Guardar pacientes");                                                       
+            System.out.println("9. Eliminar paciente");                                                       
+            System.out.println("10. Mostrar lista de pacientes");                                             
+            System.out.println("11. Registrar cita");                                                         
+            System.out.println("12. Mostrar citas");                                                          
+            System.out.println("13. Guardar citas");                                                          
+            System.out.println("14. Eliminar cita");                                                          
+            System.out.println("15. Mostrar lista de citas");                                                 
+            System.out.println("16. Salir");                                                                  
+                                                                                                              
+            System.out.print("Elige una opción: ");                                                           
+            try {                                                                                             
+                opcion = Integer.parseInt(scanner.nextLine());                                                
+            } catch (NumberFormatException e) {                                                               
+                System.out.println("Por favor, ingresa un número válido.");                                   
+                continue;                                                                                     
+            }                                                                                                 
+            switch (opcion) {                                                                                 
+                case 1:                                                                                       
+                    System.out.print("Ingresa el nombre del doctor: ");                                       
+                    String nombreDoctor = scanner.nextLine();                                                 
+                    System.out.print("Ingresa el ID del doctor: ");                                           
+                    String idDoctor = scanner.nextLine();                                                     
+                    System.out.print("Ingresa la especialidad del doctor: ");                                 
+                    String especialidadDoctor = scanner.nextLine();                                           
+                    sistemaClinico.registrarDoctor(idDoctor, nombreDoctor, especialidadDoctor);               
+                    break;                                                                                    
+                case 2:                                                                                       
+                    sistemaClinico.listarDoctores();                                                          
+                    break;                                                                                    
+                case 3:                                                                                       
+                    sistemaClinico.guardarDoctores();                                                         
+                    System.out.println("Cambios guardados.");                                                 
+                    break;                                                                                    
+                case 4:                                                                                       
+                    System.out.print("Ingresa el ID del doctor a eliminar: ");                                
+                    String idDoctorEliminar = scanner.nextLine();                                             
+                    sistemaClinico.eliminarDoctor(idDoctorEliminar);                                          
+                    break;                                                                                    
+                case 5:                                                                                       
+                    sistemaClinico.mostrarListaDoctores();                                                    
+                    break;                                                                                    
+                case 6:                                                                                       
+                    System.out.print("Ingresa el nombre del paciente: ");                                     
+                    String nombrePaciente = scanner.nextLine();                                               
+                    System.out.print("Ingresa el ID del paciente: ");                                         
+                    String idPaciente = scanner.nextLine();                                                   
+                    sistemaClinico.registrarPaciente(idPaciente, nombrePaciente);                             
+                    break;                                                                                    
+                case 7:                                                                                       
+                    sistemaClinico.listarPacientes();                                                         
+                    break;                                                                                    
+                case 8:                                                                                       
+                    sistemaClinico.guardarPacientes();                                                        
+                    System.out.println("Cambios guardados.");                                                 
+                    break;                                                                                    
+                case 9:                                                                                       
+                    System.out.print("Ingresa el ID del paciente a eliminar: ");                              
+                    String idPacienteEliminar = scanner.nextLine();                                           
+                    sistemaClinico.eliminarPaciente(idPacienteEliminar);                                      
+                    break;                                                                                    
+                case 10:                                                                                      
+                    sistemaClinico.mostrarListaPacientes();                                                   
+                    break;                                                                                    
+                case 11:                                                                                      
+                    System.out.print("Ingresa el ID de la cita: ");                                           
+                    String idCita = scanner.nextLine();                                                       
+                    System.out.print("Ingresa la fecha y hora de la cita: ");                                 
+                    String fechaHoraCita = scanner.nextLine();                                                
+                    System.out.print("Ingresa el motivo de la cita: ");                                       
+                    String motivoCita = scanner.nextLine();                                                   
+                    System.out.print("Ingresa el ID del doctor para la cita: ");                              
+                    String idDoctorCita = scanner.nextLine();                                                 
+                    System.out.print("Ingresa el ID del paciente para la cita: ");                            
+                    String idPacienteCita = scanner.nextLine();                                               
+                    sistemaClinico.registrarCita(idCita, fechaHoraCita, motivoCita, idDoctorCita, idPacienteCi
+                    break;                                                                                    
+                case 12:                                                                                      
+                    sistemaClinico.listarCitas();                                                             
+                    break;                                                                                    
+                case 13:                                                                                      
+                    sistemaClinico.guardarCitas();                                                            
+                    System.out.println("Cambios guardados.");                                                 
+                    break;                                                                                    
+                case 14:                                                                                      
+                    System.out.print("Ingresa el ID de la cita a eliminar: ");                                
+                    String idCitaEliminar = scanner.nextLine();                                               
+                    sistemaClinico.eliminarCita(idCitaEliminar);                                              
+                    break;                                                                                    
+                case 15:                                                                                      
+                    sistemaClinico.mostrarListaCitas();                                                       
+                    break;                                                                                    
+                case 16:                                                                                      
+                    System.out.println("Saliendo...");                                                        
+                    break;                                                                                    
+                default:                                                                                      
+                    System.out.println("Opción inválida.");                                                   
+            }                                                                                                 
+        } while (opcion != 16);                                                                               
+    }                                                                                                         
+}                                                                                                             
