@@ -1,0 +1,53 @@
+SistemaClinico
+---------------
+- doctores: Map<String, Doctor>
+- pacientes: Map<String, Paciente>
+- citas: Map<String, Cita>
+- archivoDoctores: String
+- archivoPacientes: String
+- archivoCitas: String
+---------------
++ SistemaClinico(archivoDoctores: String, archivoPacientes: String, archivoCitas: String)
++ cargarDoctores(): void
++ cargarPacientes(): void
++ cargarCitas(): void
++ guardarDoctores(): void
++ guardarPacientes(): void
++ guardarCitas(): void
++ registrarDoctor(id: String, nombre: String, especialidad: String): void
++ eliminarDoctor(id: String): void
++ listarDoctores(): void
++ mostrarListaDoctores(): void
++ registrarPaciente(id: String, nombre: String): void
++ eliminarPaciente(id: String): void
++ listarPacientes(): void
++ mostrarListaPacientes(): void
++ registrarCita(id: String, fechaHora: String, motivo: String, idDoctor: String, idPaciente: String): void
++ eliminarCita(id: String): void
++ listarCitas(): void
++ mostrarListaCitas(): void
+
+Doctor
+------
+- id: String
+- nombre: String
+- especialidad: String
+------
++ Doctor(id: String, nombre: String, especialidad: String)
+
+Paciente
+--------
+- id: String
+- nombre: String
+--------
++ Paciente(id: String, nombre: String)
+
+Cita
+----
+- id: String
+- fechaHora: String
+- motivo: String
+- idDoctor: String
+- idPaciente: String
+----
++ Cita(id: String, fechaHora: String, motivo: String, idDoctor: String, idPaciente: String)
